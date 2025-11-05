@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="hole_diameter" class="form-label small">קוטר חור (ס"מ)</label>
-                                    <input type="number" class="form-control form-control-sm" id="hole_diameter" value="0.8" min="0.1" max="10" step="0.1">
+                                    <input type="number" class="form-control form-control-sm" id="hole_diameter" value="0.3" min="0.1" max="10" step="0.1">
                                 </div>
                             </div>
 
@@ -154,7 +154,7 @@
             document.getElementById('width').value = defaultWidth;
             document.getElementById('height').value = defaultHeight;
             document.getElementById('edge_distance').value = edgeDistance;
-            document.getElementById('hole_diameter').value = 0.8;
+            document.getElementById('hole_diameter').value = 0.3;
             document.getElementById('rings_width').value = ringsWidth;
             document.getElementById('rings_height').value = ringsHeight;
             document.getElementById('spacing_x').value = actualSpacingX.toFixed(1);
@@ -238,7 +238,7 @@
             const actualSpacingY = (currentHeight - 2 * edgeDistance) / (ringsHeight - 1);
 
             document.getElementById('edge_distance').value = edgeDistance;
-            document.getElementById('hole_diameter').value = 0.8;
+            document.getElementById('hole_diameter').value = 0.3;
             document.getElementById('rings_width').value = ringsWidth;
             document.getElementById('rings_height').value = ringsHeight;
             document.getElementById('spacing_x').value = actualSpacingX.toFixed(1);
