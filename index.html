@@ -21,12 +21,14 @@
             background: #f8f9fa;
             border: 1px dashed #dee2e6;
             border-radius: 0.375rem;
+            overflow: auto; /* מאפשר גלילה לתצוגות גדולות */
         }
         #previewContent svg {
             max-width: 100%;
             max-height: 100%;
             border: 1px solid #dee2e6;
             background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -34,16 +36,13 @@
     <div class="container mt-3">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <!-- Header -->
                 <div class="text-center mb-3">
-                    <h3>שלטי שמשונית</h3>
+                    <h3>שלטי שמשונית | מחשבון טבעות</h3>
                 </div>
 
-                <!-- Form -->
                 <div class="card mb-3">
                     <div class="card-body p-3">
                         <form id="windshieldForm">
-                            <!-- רוחב גובה -->
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <label for="width" class="form-label small">רוחב (ס"מ)</label>
@@ -55,7 +54,6 @@
                                 </div>
                             </div>
 
-                            <!-- מרחק מהקצה | קוטר חור -->
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <label for="edge_distance" class="form-label small">מרחק מהקצה (ס"מ)</label>
@@ -67,7 +65,6 @@
                                 </div>
                             </div>
 
-                            <!-- טבעות לרוחב | טבעות לגובה -->
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <label for="rings_width" class="form-label small">טבעות לרוחב</label>
@@ -79,7 +76,6 @@
                                 </div>
                             </div>
 
-                            <!-- מרווח רוחב | מרווח גובה -->
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <label for="spacing_x" class="form-label small">מרווח רוחב (ס"מ)</label>
@@ -91,7 +87,6 @@
                                 </div>
                             </div>
 
-                            <!-- חיפושים אחרונים -->
                             <div class="row mb-2">
                                 <div class="col-12">
                                     <label class="form-label small">חיפושים אחרונים</label>
@@ -101,7 +96,6 @@
                                 </div>
                             </div>
 
-                            <!-- איפוס | הורד SVG -->
                             <div class="row mb-2">
                                 <div class="col-md-6">
                                     <button type="button" class="btn btn-outline-secondary btn-sm w-100" onclick="resetHolesOnly()">
@@ -110,7 +104,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <button type="button" class="btn btn-primary btn-sm w-100" onclick="downloadSVGFile()">
-                                        הורד SVG
+                                        <i class="bi bi-download"></i> הורד SVG
                                     </button>
                                 </div>
                             </div>
@@ -118,9 +112,8 @@
                     </div>
                 </div>
 
-                <!-- תצוגה מקדימה -->
                 <div id="preview" class="mt-3" style="display: block;">
-                    <h6>תצוגה מקדימה</h6>
+                    <h6>תצוגה מקדימה 🖼️</h6>
                     <div id="previewContent" class="border p-2 text-center bg-light" style="min-height: 200px;">
                         <p class="text-muted">טוען תצוגה מקדימה...</p>
                     </div>
@@ -163,35 +156,36 @@
 
         // Update spacing when rings count changes
         function updateSpacingFromCount() {
-            const width = parseFloat(document.getElementById('width').value) * 10; // Convert cm to mm
-            const height = parseFloat(document.getElementById('height').value) * 10; // Convert cm to mm
-            const edgeDistance = parseFloat(document.getElementById('edge_distance').value) * 10; // Convert cm to mm
+            const width = parseFloat(document.getElementById('width').value); // cm
+            const height = parseFloat(document.getElementById('height').value); // cm
+            const edgeDistance = parseFloat(document.getElementById('edge_distance').value); // cm
             const ringsWidth = parseInt(document.getElementById('rings_width').value);
             const ringsHeight = parseInt(document.getElementById('rings_height').value);
 
-            // Calculate spacing for each direction
+            // Calculate length excluding edge distances
             const topBottomLength = width - 2 * edgeDistance;
             const leftRightLength = height - 2 * edgeDistance;
 
-            // Spacing between rings (not including corners)
+            // Spacing between rings
             const spacingX = ringsWidth > 1 ? topBottomLength / (ringsWidth - 1) : 0;
             const spacingY = ringsHeight > 1 ? leftRightLength / (ringsHeight - 1) : 0;
 
-            // Update the spacing fields (convert back to cm)
-            document.getElementById('spacing_x').value = (spacingX / 10).toFixed(1);
-            document.getElementById('spacing_y').value = (spacingY / 10).toFixed(1);
+            // Update the spacing fields (toFixed(1) for display)
+            document.getElementById('spacing_x').value = spacingX.toFixed(1);
+            document.getElementById('spacing_y').value = spacingY.toFixed(1);
         }
 
         // Update rings count when spacing changes
         function updateCountFromSpacing() {
-            const width = parseFloat(document.getElementById('width').value) * 10; // Convert cm to mm
-            const height = parseFloat(document.getElementById('height').value) * 10; // Convert cm to mm
-            const edgeDistance = parseFloat(document.getElementById('edge_distance').value) * 10; // Convert cm to mm
-            const spacingX = parseFloat(document.getElementById('spacing_x').value) * 10; // Convert cm to mm
-            const spacingY = parseFloat(document.getElementById('spacing_y').value) * 10; // Convert cm to mm
+            const width = parseFloat(document.getElementById('width').value); // cm
+            const height = parseFloat(document.getElementById('height').value); // cm
+            const edgeDistance = parseFloat(document.getElementById('edge_distance').value); // cm
+            const spacingX = parseFloat(document.getElementById('spacing_x').value); // cm
+            const spacingY = parseFloat(document.getElementById('spacing_y').value); // cm
 
             if (spacingX > 0) {
                 const topBottomLength = width - 2 * edgeDistance;
+                // חישוב מספר הטבעות (כולל הפינות)
                 const ringsWidth = Math.max(2, Math.round(topBottomLength / spacingX) + 1);
                 document.getElementById('rings_width').value = ringsWidth;
             }
@@ -216,6 +210,9 @@
 
             document.getElementById('rings_width').value = ringsWidth;
             document.getElementById('rings_height').value = ringsHeight;
+
+            // **תיקון קריטי:** עדכון המרווח בפועל לאחר חישוב מחדש של מספר הטבעות
+            updateSpacingFromCount(); 
         }
 
         // Update preview and code
@@ -247,7 +244,7 @@
             updatePreviewAndCode();
         }
 
-        // Recent searches functions
+        // Recent searches functions (unchanged)
         function loadRecentSearches() {
             const stored = localStorage.getItem('windshield_recent_searches');
             if (stored) {
@@ -293,7 +290,7 @@
             recentSearches.forEach((search, index) => {
                 const option = document.createElement('option');
                 option.value = index;
-                option.textContent = `${search.width}×${search.height} - ${search.rings_width}×${search.rings_height} טבעות (${search.timestamp})`;
+                option.textContent = `${search.width}×${search.height} - ${search.rings_width}×${search.height} טבעות (${search.timestamp})`;
                 select.appendChild(option);
             });
         }
@@ -314,7 +311,8 @@
                 document.getElementById('spacing_x').value = data.spacing_x;
                 document.getElementById('spacing_y').value = data.spacing_y;
 
-                updateSpacingFromCount();
+                // עדכון המרווח בפועל
+                updateSpacingFromCount(); 
                 updatePreviewAndCode();
             }
         }
@@ -328,86 +326,78 @@
         // Preview function
         function testPreview() {
             try {
-                const width = parseFloat(document.getElementById('width').value) * 10; // Convert cm to mm
-                const height = parseFloat(document.getElementById('height').value) * 10; // Convert cm to mm
-                const edgeDistance = parseFloat(document.getElementById('edge_distance').value) * 10; // Convert cm to mm
-                const holeDiameter = parseFloat(document.getElementById('hole_diameter').value) * 10; // Convert cm to mm
+                // קבלת נתונים והמרה למילימטרים (mm)
+                const width = parseFloat(document.getElementById('width').value) * 10;
+                const height = parseFloat(document.getElementById('height').value) * 10;
+                const edgeDistance = parseFloat(document.getElementById('edge_distance').value) * 10;
+                const holeDiameter = parseFloat(document.getElementById('hole_diameter').value) * 10;
                 const ringsWidth = parseInt(document.getElementById('rings_width').value);
                 const ringsHeight = parseInt(document.getElementById('rings_height').value);
-                const spacingX = parseFloat(document.getElementById('spacing_x').value) * 10; // Convert cm to mm
-                const spacingY = parseFloat(document.getElementById('spacing_y').value) * 10; // Convert cm to mm
+                // שימוש במרווחים בפועל כפי שחושבו והוצגו בשדות
+                const actualSpacingX = parseFloat(document.getElementById('spacing_x').value) * 10; 
+                const actualSpacingY = parseFloat(document.getElementById('spacing_y').value) * 10;
                 const radius = holeDiameter / 2;
-
-                // Calculate spacing
-                const topBottomLength = width - 2 * edgeDistance;
-                const leftRightLength = height - 2 * edgeDistance;
-                let actualSpacingX, actualSpacingY;
-
-                if (spacingX === 0) {
-                    actualSpacingX = topBottomLength / (ringsWidth - 1);
-                } else {
-                    actualSpacingX = spacingX;
+                
+                // ולידציה על מרווח מינימלי (במילימטרים)
+                const minSpacing = holeDiameter + 1; // 1mm buffer
+                
+                if (width <= 0 || height <= 0 || edgeDistance < 0 || holeDiameter <= 0 || ringsWidth < 2 || ringsHeight < 2) {
+                     document.getElementById('previewContent').innerHTML = '<p class="text-danger">אנא הזן ערכים תקינים (רוחב וגובה חיוביים, מינימום 2 טבעות).</p>';
+                     return;
                 }
 
-                if (spacingY === 0) {
-                    actualSpacingY = leftRightLength / (ringsHeight - 1);
-                } else {
-                    actualSpacingY = spacingY;
-                }
-
-                // Validate that rings don't overlap (only if all values are valid)
-                const minSpacingX = (holeDiameter + 2); // Minimum spacing to avoid overlap
-                const minSpacingY = (holeDiameter + 2);
-
-                // Only show alert if values are complete and valid
-                if (width > 0 && height > 0 && edgeDistance > 0 && holeDiameter > 0 &&
-                    ringsWidth >= 2 && ringsHeight >= 2 &&
-                    (actualSpacingX < minSpacingX || actualSpacingY < minSpacingY)) {
-                    alert(`מרווח קטן מדי! מינימום: ${(minSpacingX/10).toFixed(1)} ס"מ לרוחב, ${(minSpacingY/10).toFixed(1)} ס"מ לגובה`);
+                if (actualSpacingX < minSpacing || actualSpacingY < minSpacing) {
+                    alert(`מרווח קטן מדי! מינימום: ${(minSpacing/10).toFixed(1)} ס"מ לרוחב וגובה. המערכת לא מייצרת חורים חופפים.`);
+                    document.getElementById('previewContent').innerHTML = '<p class="text-danger">מרווח קטן מדי! יש לתקן את נתוני הטבעות או המרווח.</p>';
                     return;
                 }
-
-                // Place rings around the perimeter with calculated spacing
-                const rings = [];
-
-                // Top edge (left to right) - including corners
+                
+                // -----------------------------------------------------------
+                // **תיקון לוגיקת מיקום הטבעות (מניעת כפילויות פינות)**
+                // -----------------------------------------------------------
+                
+                // 1. Top edge (left to right) - כולל פינה שמאלית עליונה וימנית עליונה
+                const topRings = [];
                 for (let i = 0; i < ringsWidth; i++) {
-                    const x = edgeDistance + (i * actualSpacingX);
-                    rings.push({
-                        x: x,
-                        y: edgeDistance
-                    });
+                    topRings.push({ x: edgeDistance + (i * actualSpacingX), y: edgeDistance });
                 }
 
-                // Right edge (excluding top corner)
+                // 2. Right edge (top to bottom) - לא כולל פינה עליונה, כולל תחתונה
+                const rightRings = [];
                 for (let i = 1; i < ringsHeight; i++) {
-                    const x = width - edgeDistance;
-                    const y = edgeDistance + (i * actualSpacingY);
-                    rings.push({
-                        x: x,
-                        y: y
-                    });
+                    rightRings.push({ x: width - edgeDistance, y: edgeDistance + (i * actualSpacingY) });
                 }
 
-                // Bottom edge (excluding right corner)
+                // 3. Bottom edge (right to left) - לא כולל פינה ימנית, כולל שמאלית
+                const bottomRings = [];
                 for (let i = ringsWidth - 2; i >= 0; i--) {
-                    const x = edgeDistance + (i * actualSpacingX);
-                    const y = height - edgeDistance;
-                    rings.push({
-                        x: x,
-                        y: y
-                    });
+                    bottomRings.push({ x: edgeDistance + (i * actualSpacingX), y: height - edgeDistance });
                 }
 
-                // Left edge (excluding bottom and top corners)
+                // 4. Left edge (bottom to top) - לא כולל פינה תחתונה ועליונה
+                const leftRings = [];
                 for (let i = ringsHeight - 2; i > 0; i--) {
-                    const x = edgeDistance;
-                    const y = edgeDistance + (i * actualSpacingY);
-                    rings.push({
-                        x: x,
-                        y: y
-                    });
+                    leftRings.push({ x: edgeDistance, y: edgeDistance + (i * actualSpacingY) });
                 }
+
+                // איחוד כל הטבעות והסרת כפילויות באמצעות Map
+                const allRings = [...topRings, ...rightRings, ...bottomRings, ...leftRings];
+                const ringsMap = new Map();
+                allRings.forEach(ring => {
+                    // מפתח ייחודי לכל מיקום
+                    const key = `${ring.x.toFixed(1)}_${ring.y.toFixed(1)}`; 
+                    if (!ringsMap.has(key)) {
+                        ringsMap.set(key, ring);
+                    }
+                });
+
+                const rings = Array.from(ringsMap.values());
+                const totalRings = rings.length;
+
+                // -----------------------------------------------------------
+                // סוף תיקון לוגיקת מיקום הטבעות
+                // -----------------------------------------------------------
+
 
                 // Generate circles HTML
                 let circlesHTML = '';
@@ -427,14 +417,18 @@
                     previewHeight = maxPreviewSize;
                     previewWidth = maxPreviewSize * aspectRatio;
                 }
+                
+                // ודא גודל מינימלי לקריאות
+                if (previewWidth < 50 || previewHeight < 50) {
+                     previewWidth *= 2;
+                     previewHeight *= 2;
+                }
 
                 // Generate SVG
                 const svg = `
-                    <svg width="${previewWidth}" height="${previewHeight}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-                        <!-- מסגרת השלט -->
+                    <svg width="${previewWidth}px" height="${previewHeight}px" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
                         <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="black" stroke-width="0.7"/>
 
-                        <!-- טבעות -->
                         ${circlesHTML}
                     </svg>
                 `;
@@ -443,7 +437,6 @@
                 document.getElementById('previewContent').innerHTML = svg;
 
                 // Update dimensions info
-                const totalRings = rings.length;
                 const dimensionsInfo = `
                     <div class="d-flex flex-wrap gap-3">
                         <span><strong>מידות:</strong> ${(width/10).toFixed(1)} × ${(height/10).toFixed(1)} ס"מ</span>
@@ -462,112 +455,114 @@
 
         // Download SVG function
         function downloadSVGFile() {
-            console.log('downloadSVGFile called');
+            try {
+                // קבלת נתונים והמרה למילימטרים (mm)
+                const width = parseFloat(document.getElementById('width').value) * 10;
+                const height = parseFloat(document.getElementById('height').value) * 10;
+                const edgeDistance = parseFloat(document.getElementById('edge_distance').value) * 10;
+                const holeDiameter = parseFloat(document.getElementById('hole_diameter').value) * 10;
+                const ringsWidth = parseInt(document.getElementById('rings_width').value);
+                const ringsHeight = parseInt(document.getElementById('rings_height').value);
+                const actualSpacingX = parseFloat(document.getElementById('spacing_x').value) * 10; 
+                const actualSpacingY = parseFloat(document.getElementById('spacing_y').value) * 10;
+                const radius = holeDiameter / 2;
 
-            // Generate SVG content directly (same as showSVGCode)
-            const width = parseFloat(document.getElementById('width').value) * 10;
-            const height = parseFloat(document.getElementById('height').value) * 10;
-            const edgeDistance = parseFloat(document.getElementById('edge_distance').value) * 10;
-            const holeDiameter = parseFloat(document.getElementById('hole_diameter').value) * 10;
-            const ringsWidth = parseInt(document.getElementById('rings_width').value);
-            const ringsHeight = parseInt(document.getElementById('rings_height').value);
-            const spacingX = parseFloat(document.getElementById('spacing_x').value) * 10;
-            const spacingY = parseFloat(document.getElementById('spacing_y').value) * 10;
-            const radius = holeDiameter / 2;
+                // ולידציה בסיסית לפני הורדה
+                if (width <= 0 || height <= 0 || ringsWidth < 2 || ringsHeight < 2) {
+                     alert('אנא הזן מידות תקינות לפני הורדת הקובץ.');
+                     return;
+                }
+                
+                // -----------------------------------------------------------
+                // **תיקון לוגיקת מיקום הטבעות (מניעת כפילויות פינות)**
+                // -----------------------------------------------------------
+                
+                // 1. Top edge (left to right) - כולל פינה שמאלית עליונה וימנית עליונה
+                const topRings = [];
+                for (let i = 0; i < ringsWidth; i++) {
+                    topRings.push({ x: edgeDistance + (i * actualSpacingX), y: edgeDistance });
+                }
 
-            // Calculate spacing
-            const topBottomLength = width - 2 * edgeDistance;
-            const leftRightLength = height - 2 * edgeDistance;
-            const actualSpacingX = spacingX === 0 ? topBottomLength / (ringsWidth - 1) : spacingX;
-            const actualSpacingY = spacingY === 0 ? leftRightLength / (ringsHeight - 1) : spacingY;
+                // 2. Right edge (top to bottom) - לא כולל פינה עליונה, כולל תחתונה
+                const rightRings = [];
+                for (let i = 1; i < ringsHeight; i++) {
+                    rightRings.push({ x: width - edgeDistance, y: edgeDistance + (i * actualSpacingY) });
+                }
 
-            // Generate rings
-            const rings = [];
+                // 3. Bottom edge (right to left) - לא כולל פינה ימנית, כולל שמאלית
+                const bottomRings = [];
+                for (let i = ringsWidth - 2; i >= 0; i--) {
+                    bottomRings.push({ x: edgeDistance + (i * actualSpacingX), y: height - edgeDistance });
+                }
 
-            // Top edge
-            for (let i = 0; i < ringsWidth; i++) {
-                rings.push({
-                    x: edgeDistance + (i * actualSpacingX),
-                    y: edgeDistance
+                // 4. Left edge (bottom to top) - לא כולל פינה תחתונה ועליונה
+                const leftRings = [];
+                for (let i = ringsHeight - 2; i > 0; i--) {
+                    leftRings.push({ x: edgeDistance, y: edgeDistance + (i * actualSpacingY) });
+                }
+
+                // איחוד כל הטבעות והסרת כפילויות באמצעות Map
+                const allRings = [...topRings, ...rightRings, ...bottomRings, ...leftRings];
+                const ringsMap = new Map();
+                allRings.forEach(ring => {
+                    const key = `${ring.x.toFixed(1)}_${ring.y.toFixed(1)}`;
+                    if (!ringsMap.has(key)) {
+                        ringsMap.set(key, ring);
+                    }
                 });
-            }
 
-            // Right edge (excluding top corner)
-            for (let i = 1; i < ringsHeight; i++) {
-                rings.push({
-                    x: width - edgeDistance,
-                    y: edgeDistance + (i * actualSpacingY)
+                const finalRings = Array.from(ringsMap.values());
+                
+                // -----------------------------------------------------------
+                // סוף תיקון לוגיקת מיקום הטבעות
+                // -----------------------------------------------------------
+
+                // Generate SVG
+                let circlesHTML = '';
+                finalRings.forEach(ring => {
+                    // הגדרת stroke-width גדולה יותר להדפסה, אם תרצה
+                    circlesHTML += `<circle cx="${ring.x}" cy="${ring.y}" r="${radius}" fill="none" stroke="red" stroke-width="1.0"/>`; 
                 });
-            }
 
-            // Bottom edge (excluding right corner)
-            for (let i = ringsWidth - 2; i >= 0; i--) {
-                rings.push({
-                    x: edgeDistance + (i * actualSpacingX),
-                    y: height - edgeDistance
-                });
-            }
-
-            // Left edge (excluding bottom and top corners)
-            for (let i = ringsHeight - 2; i > 0; i--) {
-                rings.push({
-                    x: edgeDistance,
-                    y: edgeDistance + (i * actualSpacingY)
-                });
-            }
-
-            // Generate SVG
-            let circlesHTML = '';
-            rings.forEach(ring => {
-                circlesHTML += `<circle cx="${ring.x}" cy="${ring.y}" r="${radius}" fill="none" stroke="red" stroke-width="0.7"/>`;
-            });
-
-            const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+                // יצירת קובץ SVG להורדה (המידות ב-mm)
+                const svgContent = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}mm" height="${height}mm" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="black" stroke-width="0.7"/>
+    <rect x="0" y="0" width="${width}" height="${height}" fill="none" stroke="black" stroke-width="1.0"/>
     ${circlesHTML}
 </svg>`;
 
-            console.log('SVG content generated, length:', svgContent.length);
+                // Get current values for filename
+                const widthValue = document.getElementById('width').value;
+                const heightValue = document.getElementById('height').value;
+                const ringsWidthValue = document.getElementById('rings_width').value;
+                const ringsHeightValue = document.getElementById('rings_height').value;
 
-            // Get current values for filename
-            const widthValue = document.getElementById('width').value;
-            const heightValue = document.getElementById('height').value;
-            const ringsWidthValue = document.getElementById('rings_width').value;
-            const ringsHeightValue = document.getElementById('rings_height').value;
+                // Create filename
+                const filename = `windshield_sign_${widthValue}x${heightValue}_${ringsWidthValue}x${ringsHeightValue}_rings.svg`;
 
-            // Create filename
-            const filename = `windshield_sign_${widthValue}x${heightValue}_${ringsWidthValue}x${ringsHeightValue}_rings.svg`;
-            console.log('Creating file:', filename);
+                // Create blob and trigger download
+                const blob = new Blob([svgContent], {
+                    type: 'image/svg+xml'
+                });
+                const url = URL.createObjectURL(blob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = filename;
+                downloadLink.style.display = 'none';
 
-            // Create blob with SVG content
-            const blob = new Blob([svgContent], {
-                type: 'image/svg+xml'
-            });
-            console.log('Blob created, size:', blob.size);
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
 
-            // Create download URL
-            const url = URL.createObjectURL(blob);
-            console.log('Download URL created');
+                // Clean up
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(url);
 
-            // Create download link
-            const downloadLink = document.createElement('a');
-            downloadLink.href = url;
-            downloadLink.download = filename;
-            downloadLink.style.display = 'none';
-
-            // Add to page and trigger download
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-
-            // Clean up
-            document.body.removeChild(downloadLink);
-            URL.revokeObjectURL(url);
-
-            console.log('Download completed successfully');
-
-            // Save as recent search
-            saveRecentSearch();
+                // Save as recent search
+                saveRecentSearch();
+            } catch (error) {
+                console.error('Error during SVG download:', error);
+                alert('אירעה שגיאה בעת ניסיון הורדת הקובץ. בדוק את נתוני הקלט.');
+            }
         }
 
         // Initialize page
@@ -581,7 +576,7 @@
                 testPreview();
             }, 200);
 
-            // Listen to rings count changes
+            // Listen to rings count changes -> update spacing
             document.getElementById('rings_width').addEventListener('change', function() {
                 updateSpacingFromCount();
                 updatePreviewAndCode();
@@ -591,7 +586,7 @@
                 updatePreviewAndCode();
             });
 
-            // Listen to dimension changes
+            // Listen to dimension/edge distance changes -> update rings count & spacing
             ['width', 'height', 'edge_distance'].forEach(id => {
                 document.getElementById(id).addEventListener('change', function() {
                     updateRingsFromDimensions(); // Update rings to maintain ~50cm spacing
@@ -599,12 +594,12 @@
                 });
             });
 
-            // Listen to hole diameter changes (doesn't affect rings count)
+            // Listen to hole diameter changes (affects only preview/download)
             document.getElementById('hole_diameter').addEventListener('input', function() {
                 updatePreviewAndCode();
             });
 
-            // Listen to spacing changes
+            // Listen to spacing changes -> update rings count
             document.getElementById('spacing_x').addEventListener('change', function() {
                 updateCountFromSpacing();
                 updatePreviewAndCode();
